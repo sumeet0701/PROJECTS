@@ -1,1 +1,591 @@
 
+{
+  "metadata": {
+    "kernelspec": {
+      "language": "python",
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "pygments_lexer": "ipython3",
+      "nbconvert_exporter": "python",
+      "version": "3.6.4",
+      "file_extension": ".py",
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "name": "python",
+      "mimetype": "text/x-python"
+    }
+  },
+  "nbformat_minor": 4,
+  "nbformat": 4,
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": "# This Python 3 environment comes with many helpful analytics libraries installed\n# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python\n# For example, here's several helpful packages to load\n\nimport numpy as np # linear algebra\nimport pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n\n# Input data files are available in the read-only \"../input/\" directory\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory\n\nimport os\nfor dirname, _, filenames in os.walk('/kaggle/input'):\n    for filename in filenames:\n        print(os.path.join(dirname, filename))\n\n# You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using \"Save & Run All\" \n# You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session",
+      "metadata": {
+        "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+        "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:38.982475Z",
+          "iopub.execute_input": "2022-06-16T13:15:38.982915Z",
+          "iopub.status.idle": "2022-06-16T13:15:38.996328Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:38.982872Z",
+          "shell.execute_reply": "2022-06-16T13:15:38.995481Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "import matplotlib.pyplot as plt\nimport seaborn as sns\nfrom warnings import filterwarnings",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:38.998504Z",
+          "iopub.execute_input": "2022-06-16T13:15:38.999213Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.008010Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:38.999170Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.007129Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "tesla_stock = pd.read_csv(\"/kaggle/input/tesla-stocks-where-is-my-cyber-truck/tesla_stonks_up_and_down.csv\")",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.009785Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.010438Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.037417Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.010401Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.036305Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "tesla_stock.head()",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.039632Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.040005Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.058043Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.039972Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.057172Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "tesla_stock.tail()",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.059556Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.060172Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.076763Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.060125Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.075599Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "tesla_stock.shape",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.078033Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.078936Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.084339Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.078899Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.083523Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "tesla_stock.info()",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.085482Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.085923Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.110299Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.085893Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.109142Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "tesla_stock.describe()",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.111285Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.112267Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.146059Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.112219Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.145232Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# checking of null values:\ntesla_stock.isnull().sum()",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.147417Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.147979Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.156837Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.147933Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.155654Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": "So, There is no null values present in data ",
+      "metadata": {}
+    },
+    {
+      "cell_type": "code",
+      "source": "",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "correlation = tesla_stock_new.corr()\ncorrelation",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.161291Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.162176Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.179413Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.162125Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.178503Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "sns.heatmap(correlation, annot=True, cmap = 'coolwarm')",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.180998Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.182032Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.568755Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.181992Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.567943Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "tesla_stock['Date'] = pd.to_datetime(tesla_stock['Date'])\ntesla_stock['Year'] = tesla_stock['Date'].dt.year\ntesla_stock['Month'] = tesla_stock['Date'].dt.month\ntesla_stock['Day'] = tesla_stock['Date'].dt.day",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.569947Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.570892Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.584172Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.570787Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.583052Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "plt.figure(figsize=(20,10))\nplt.plot(tesla_stock_new['Open'])",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.585963Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.586464Z",
+          "iopub.status.idle": "2022-06-16T13:15:39.842439Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.586414Z",
+          "shell.execute_reply": "2022-06-16T13:15:39.841354Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "plt.figure(figsize=(20,10))\nplt.plot(tesla_stock_new['Close'])",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:39.843954Z",
+          "iopub.execute_input": "2022-06-16T13:15:39.844867Z",
+          "iopub.status.idle": "2022-06-16T13:15:40.040064Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:39.844827Z",
+          "shell.execute_reply": "2022-06-16T13:15:40.038692Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "plt.figure(figsize=(20,10))\nplt.plot(tesla_stock['High'])",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:40.041656Z",
+          "iopub.execute_input": "2022-06-16T13:15:40.042190Z",
+          "iopub.status.idle": "2022-06-16T13:15:40.292515Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:40.042141Z",
+          "shell.execute_reply": "2022-06-16T13:15:40.291690Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "plt.figure(figsize=(20,7))\nsns.lineplot(data=tesla_stock,x=\"Year\",y=\"High\",color=\"red\",label=\"High\")\nsns.lineplot(data=tesla_stock,x=\"Year\",y=\"Low\",color=\"green\",label=\"Low\")\n\nplt.title(\"The relation between Year of High & low Value\")\nplt.legend()",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:40.294073Z",
+          "iopub.execute_input": "2022-06-16T13:15:40.294467Z",
+          "iopub.status.idle": "2022-06-16T13:15:41.429036Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:40.294433Z",
+          "shell.execute_reply": "2022-06-16T13:15:41.427434Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "plt.figure(figsize=(20,7))\nsns.lineplot(data=tesla_stock,x=\"Date\",y=\"High\",color=\"red\",label=\"High\")\nsns.lineplot(data= tesla_stock,x=\"Date\",y=\"Low\",color=\"green\",label=\"Low\")\n\nplt.title(\"The relation between Date of High & low Value\")",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:41.431310Z",
+          "iopub.execute_input": "2022-06-16T13:15:41.431995Z",
+          "iopub.status.idle": "2022-06-16T13:15:41.972392Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:41.431943Z",
+          "shell.execute_reply": "2022-06-16T13:15:41.971314Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "plt.figure(figsize=(20,7))\nsns.lineplot(data=tesla_stock,x=\"Date\",y=\"Open\",color=\"red\",label=\"High\")\nsns.lineplot(data=tesla_stock,x=\"Date\",y=\"Close\",color=\"green\",label=\"Low\")\n\nplt.legend()\nplt.title(\"The relation between Date of OPEN & CLOSE Value\")",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:41.974652Z",
+          "iopub.execute_input": "2022-06-16T13:15:41.975242Z",
+          "iopub.status.idle": "2022-06-16T13:15:42.499319Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:41.975206Z",
+          "shell.execute_reply": "2022-06-16T13:15:42.498293Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "plt.figure(figsize=(20,7))\nsns.displot(tesla_stock['Volume'],bins=50)\nplt.title(\"Count of Volume\")",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:42.500915Z",
+          "iopub.execute_input": "2022-06-16T13:15:42.501441Z",
+          "iopub.status.idle": "2022-06-16T13:15:42.831064Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:42.501404Z",
+          "shell.execute_reply": "2022-06-16T13:15:42.830277Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# relation between data and volume using displot\nplt.figure(figsize=(20,7))\nsns.displot(data = tesla_stock, y= 'Volume', x= 'Date')\nplt.legend()\nplt.title(\" relation between data and volume\")",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:42.832336Z",
+          "iopub.execute_input": "2022-06-16T13:15:42.832859Z",
+          "iopub.status.idle": "2022-06-16T13:15:43.416262Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:42.832827Z",
+          "shell.execute_reply": "2022-06-16T13:15:43.415452Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# relation between data and volume using Scatter plot\nplt.figure(figsize=(20,7))\nsns.scatterplot(data=tesla_stock,x=\"Date\",y=\"Volume\",)\nplt.legend()\nplt.title(\"The relation between  Date of Volume\")",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:43.417544Z",
+          "iopub.execute_input": "2022-06-16T13:15:43.418047Z",
+          "iopub.status.idle": "2022-06-16T13:15:43.773017Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:43.418013Z",
+          "shell.execute_reply": "2022-06-16T13:15:43.772196Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# relation between data and volume using bar graph\nplt.figure(figsize=(20,7))\nsns.barplot(data=tesla_stock,x=\"Date\",y=\"Volume\",)\nplt.legend()\nplt.title(\"The relation between  Date of Volume\")",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:15:43.774330Z",
+          "iopub.execute_input": "2022-06-16T13:15:43.774816Z",
+          "iopub.status.idle": "2022-06-16T13:16:47.655712Z",
+          "shell.execute_reply.started": "2022-06-16T13:15:43.774782Z",
+          "shell.execute_reply": "2022-06-16T13:16:47.654880Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "sns.pairplot(tesla_stock[1:])",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:16:47.657031Z",
+          "iopub.execute_input": "2022-06-16T13:16:47.657881Z",
+          "iopub.status.idle": "2022-06-16T13:17:05.868317Z",
+          "shell.execute_reply.started": "2022-06-16T13:16:47.657844Z",
+          "shell.execute_reply": "2022-06-16T13:17:05.866996Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# different tpyes of moving averages :\n# 10 days moving average\ntesla_stock['MA10'] = tesla_stock['Adj Close'].rolling(window = 10).mean()\n\n# 30 days moving average\ntesla_stock['MA30'] = tesla_stock['Adj Close'].rolling(window = 30).mean()\n\n# 50 days moving average\ntesla_stock['MA50'] = tesla_stock['Adj Close'].rolling(window = 50).mean()\n\n# 100 days moving average\ntesla_stock['MA100'] = tesla_stock['Adj Close'].rolling(window = 100).mean()\n\n# 200 days moving average\ntesla_stock['MA200'] = tesla_stock['Adj Close'].rolling(window = 200).mean()\n",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:05.870220Z",
+          "iopub.execute_input": "2022-06-16T13:17:05.870933Z",
+          "iopub.status.idle": "2022-06-16T13:17:05.888837Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:05.870885Z",
+          "shell.execute_reply": "2022-06-16T13:17:05.887714Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# For plotting different moving average graph function\ndef plot_ma(Mov_avg):\n    plt.figure(figsize = (18,10))\n    plt.plot(tesla_stock['Close'])\n    plt.plot(tesla_stock[Mov_avg])\n    plt.legend(['Close', Mov_avg])\n    plt.title('Close Price and Mean Average', fontsize = 20)",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:05.890702Z",
+          "iopub.execute_input": "2022-06-16T13:17:05.891435Z",
+          "iopub.status.idle": "2022-06-16T13:17:05.901607Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:05.891378Z",
+          "shell.execute_reply": "2022-06-16T13:17:05.900692Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# 10 days moving average plot :\nprint(plot_ma('MA10'))",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:05.903512Z",
+          "iopub.execute_input": "2022-06-16T13:17:05.904286Z",
+          "iopub.status.idle": "2022-06-16T13:17:06.183892Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:05.904242Z",
+          "shell.execute_reply": "2022-06-16T13:17:06.182974Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# 30 days moving average plot :\nprint(plot_ma('MA30'))",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:06.185254Z",
+          "iopub.execute_input": "2022-06-16T13:17:06.186032Z",
+          "iopub.status.idle": "2022-06-16T13:17:06.451599Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:06.185988Z",
+          "shell.execute_reply": "2022-06-16T13:17:06.450608Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# 50 days moving average plot :\nprint(plot_ma('MA50'))",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:06.456225Z",
+          "iopub.execute_input": "2022-06-16T13:17:06.456640Z",
+          "iopub.status.idle": "2022-06-16T13:17:06.729068Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:06.456606Z",
+          "shell.execute_reply": "2022-06-16T13:17:06.728032Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# 100 days moving average plot :\nprint(plot_ma('MA100'))",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:06.730357Z",
+          "iopub.execute_input": "2022-06-16T13:17:06.730740Z",
+          "iopub.status.idle": "2022-06-16T13:17:07.009739Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:06.730706Z",
+          "shell.execute_reply": "2022-06-16T13:17:07.008664Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# 200 days moving average plot :\nprint(plot_ma('MA200'))",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:07.011183Z",
+          "iopub.execute_input": "2022-06-16T13:17:07.011627Z",
+          "iopub.status.idle": "2022-06-16T13:17:07.289990Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:07.011584Z",
+          "shell.execute_reply": "2022-06-16T13:17:07.289194Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": "# Bollinger Bands Method\nBollinger Bands are a type of statistical chart characterizing the prices and volatility over time of a financial instrument or commodity, using a formulaic method propounded by **John Bollinger** in the 1980s\n\nA Bollinger Band® is a technical analysis tool defined by a set of trendlines plotted two **standard deviations** (positively and negatively) away from a **simple moving average** (SMA) of a security's price, but which can be adjusted to user preferences.\n\n1. Bollinger Bands® are a technical analysis tool developed by John Bollinger for **generating oversold or overbought signals.**\n2. There are three lines that compose Bollinger Bands: A simple moving average (middle band) and an upper and lower band.\n3. The upper and lower bands are typically 2 standard deviations +/- from a 20-day simple moving average, but they can be modified.",
+      "metadata": {}
+    },
+    {
+      "cell_type": "code",
+      "source": "period = 20\n# simple moving average\ntesla_stock['MA'] = tesla_stock['Close'].rolling(window = period).mean()\n# Standard Deviation\ntesla_stock['STD'] = tesla_stock['Close'].rolling(window = period).std()\n#Upper Band\ntesla_stock['Upper'] = tesla_stock['MA'] + (tesla_stock['STD'] * 2)\n#Lower Band\ntesla_stock['Lower'] = tesla_stock['MA'] - (tesla_stock['STD'] * 2)",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:07.290865Z",
+          "iopub.execute_input": "2022-06-16T13:17:07.291184Z",
+          "iopub.status.idle": "2022-06-16T13:17:07.304764Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:07.291155Z",
+          "shell.execute_reply": "2022-06-16T13:17:07.303666Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "column_list = ['Close','MA','Upper','Lower']\ntesla_stock[column_list].plot(figsize = (19,10))\nplt.title('Bollinger Band for Tesla Stock')\nplt.ylabel('USD Price in ($)')\nplt.show()",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:07.306435Z",
+          "iopub.execute_input": "2022-06-16T13:17:07.306978Z",
+          "iopub.status.idle": "2022-06-16T13:17:07.628193Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:07.306931Z",
+          "shell.execute_reply": "2022-06-16T13:17:07.627005Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "fig = plt.figure(figsize = (18,10))\nax = fig.add_subplot(1,1,1)\nx_axis = tesla_stock.index\nax.fill_between(x_axis,tesla_stock['Upper'], tesla_stock['Lower'],label ='Bollinger Band',color = 'red')\nax.plot(x_axis, tesla_stock['Close'], color = 'gold',lw = 3, label= 'Closing Price')\nax.plot(x_axis, tesla_stock['MA'], color = 'blue', lw=3, label='Simple Moving Average')\nax.set_title('Bollinger Band for Tesla')\nax.set_xlabel('Date')\nax.set_ylabel('USD')\nplt.xticks(rotation = 45)\nax.legend()\nplt.show()",
+      "metadata": {
+        "execution": {
+          "iopub.status.busy": "2022-06-16T13:17:07.629465Z",
+          "iopub.execute_input": "2022-06-16T13:17:07.629813Z",
+          "iopub.status.idle": "2022-06-16T13:17:07.944627Z",
+          "shell.execute_reply.started": "2022-06-16T13:17:07.629783Z",
+          "shell.execute_reply": "2022-06-16T13:17:07.943467Z"
+        },
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
